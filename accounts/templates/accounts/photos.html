@@ -1,0 +1,81 @@
+{% extends 'accounts/main.html' %}
+{% load static %}
+
+{% block title %}Photos{% endblock %}
+
+{% block content %}
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+  }
+  p {
+    font-size: 60px;
+
+  }
+  .header {
+    text-align: center;
+    padding: 32px;
+  }
+
+  .gallery {
+    column-count: 4;
+    column-gap: 16px;
+    padding: 0 16px;
+  }
+
+  .gallery img {
+    width: 100%;
+    height: auto;
+    margin: 0 0 16px;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Responsive columns */
+  @media screen and (max-width: 1200px) {
+    .gallery {
+      column-count: 3;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .gallery {
+      column-count: 2;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .gallery {
+      column-count: 1;
+    }
+  }
+</style>
+
+<div class="header">
+  <img src="{% static 'image/bacoorex.jpg' %}" style="max-width: 300px; width: 100%; height: auto; border-radius: 8px;">
+</div>
+
+<div class="gallery">
+  <img src="{% static 'image/14.jpg' %}">
+  <img src="{% static 'image/15.jpg' %}">
+  <img src="{% static 'image/16.jpg' %}">
+  <img src="{% static 'image/17.jpg' %}">
+  <img src="{% static 'image/18.jpg' %}">
+  <img src="{% static 'image/19.jpg' %}">
+  <img src="{% static 'image/6.jpg' %}">
+  <img src="{% static 'image/7.jpg' %}">
+  <img src="{% static 'image/8.jpg' %}">
+  <img src="{% static 'image/9.jpg' %}">
+  <img src="{% static 'image/10.jpg' %}">
+  <img src="{% static 'image/11.jpg' %}">
+  <img src="{% static 'image/12.jpg' %}">
+  <img src="{% static 'image/13.jpg' %}">
+</div>
+{% endblock %}

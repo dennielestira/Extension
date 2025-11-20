@@ -1,0 +1,207 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Extension Services</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ===== Body ===== */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            color: #333;
+            padding-top: 70px; /* prevent content hiding under fixed navbar */
+        }
+
+        /* ===== Topbar ===== */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #28a745;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .topbar .logo {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-right: 10px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .login-icon {
+            color: white;
+            font-size: 26px;
+            padding: 4px;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .login-icon:hover {
+            color: #d4edda;
+            transform: scale(1.1);
+        }
+
+        /* ===== Main Content ===== */
+        .main-content {
+            margin-top: 10px;
+            padding: 30px;
+            min-height: 100vh;
+            width: 100%;
+            background-image: url("{% static 'image/bgg.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;          /* always cover full area */
+            background-attachment: fixed;    /* fixed effect (desktop) */
+            position: relative;
+            z-index: 1;
+            box-sizing: border-box;
+        }
+
+        /* Wrapper inside main content */
+        .content-wrapper {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: transparent;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        /* ===== Responsiveness ===== */
+        @media (max-width: 992px) {
+            .topbar {
+                flex-direction: column;
+                align-items: center;
+                padding: 15px;
+            }
+
+            .topbar .logo {
+                font-size: 1rem;
+                text-align: center;
+                margin-bottom: 8px;
+            }
+
+            .nav-links {
+                justify-content: center;
+                margin: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar .logo {
+                font-size: 0.9rem;
+                white-space: normal;
+                text-align: center;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                gap: 8px;
+            }
+
+            .nav-links a {
+                width: 100%;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
+            .main-content {
+                padding: 15px;
+                background-attachment: scroll; /* disable fixed on mobile for compatibility */
+            }
+        }
+
+        @media (max-width: 400px) {
+            .nav-links a {
+                padding: 5px 8px;
+                font-size: 0.8rem;
+            }
+
+            .login-icon {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+    <div class="logo">Cavite State University Extension Service - Bacoor Campus</div>
+    <div class="nav-links">
+        <a href="#media-gallery">Home</a>
+        <a href="#albums">Photos</a>
+        <a href="#videos">Video</a>
+        <a href="#image">About BACOOREx</a>
+
+        {% if user.is_authenticated %}
+            {% if request.user.account_type == 'Super Admin' %}
+                <a href="{% url 'super_admin_dashboard' %}" class="dashboard-link">Back to Main Page</a>
+            {% elif request.user.account_type == 'Campus Admin' %}
+                <a href="{% url 'campus_admin_dashboard' %}" class="dashboard-link">Back to Main Page</a>
+            {% elif request.user.account_type == 'Staff Extensionist' %}
+                <a href="{% url 'staff_extensionist_dashboard' %}" class="dashboard-link">Back to Main Page</a>
+            {% elif request.user.account_type == 'Department Coordinator' %}
+                <a href="{% url 'department_coordinator_dashboard' %}" class="dashboard-link">Back to Main Page</a>
+            {% elif request.user.account_type == 'Extensionist' %}
+                <a href="{% url 'extensionist_dashboard' %}" class="dashboard-link">Back to Main Page</a>
+            {% else %}
+                <a href="{% url 'permission_denied' %}" class="dashboard-link">Back to Main Page</a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'login' %}" class="login-icon">
+                <i class="fas fa-user-circle"></i>
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Content -->
+<div class="main-content">
+    <div class="content-wrapper">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+</body>
+</html>

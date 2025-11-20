@@ -1,0 +1,40 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/completion_recommended_documents.css' %}">
+
+<div class="recommended-documents-wrapper container mt-5">
+    <div class="recommended-documents-card">
+        <h2 class="recommended-title">📑 Completion Recommended Documents</h2>
+
+        {% if documents %}
+            <div class="scrollable-list">
+                <ul class="recommended-documents-list">
+                    {% for doc in documents %}
+                        <li class="recommended-item">
+                            <div class="doc-info">
+                                <strong class="doc-name">{{ doc.name }}</strong>
+                                <small class="text-muted">Recommended by: {{ doc.recommended_by.username }}</small><br>
+                                {% if doc.department %}
+                                    <small class="text-muted">Department: {{ doc.department }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="action-links">
+                                <a href="{% url 'view_document' doc.id %}" class="btn-view">View</a>
+
+                                {% if user.account_type == 'Campus Admin' %}
+                                    <a href="{% url 'approve_completion' doc.id %}" class="btn-approve">✅ Approve</a>
+                                    <a href="{% url 'reject_completion' doc.id %}" class="btn-reject">❌ Reject</a>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <p class="text-muted">No documents in completion recommended status.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

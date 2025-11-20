@@ -1,0 +1,315 @@
+{% extends "accounts/home.html" %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+  <h3 class="mb-2 mb-md-0">
+    Open Day Training Reports — {{ quarter_label }} {{ year }}
+  </h3>
+  <div class="d-flex flex-wrap gap-2">
+    <a href="{% url 'quarterly_report_list' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back to Quarters
+    </a>
+    <a href="{% url 'download_day_training_reports_excel' quarter year %}" 
+       class="btn btn-outline-success">
+      <i class="bi bi-file-earmark-excel"></i> Download Excel/CSV
+    </a>
+  </div>
+</div>
+  
+<div class="card shadow-sm border-0 rounded-3">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm align-middle text-center">
+        <thead class="table-success">
+          <tr>
+            <th rowspan="3">Training No.</th>
+            <th rowspan="2">Code</th>
+            <th colspan="3" rowspan="2">Lead Unit</th>
+            <th colspan="1" rowspan="2">Related Curricular Offering</th>
+            <th rowspan="3">Collaborating Agency/ies</th>
+            <th colspan="1" rowspan="2">Contact Person / Training Coordinator</th>
+            <th colspan="1" rowspan="2">Project No.</th>
+            <th colspan="1" rowspan="2">Category</th>
+            <th rowspan="3" class="training-title">Title of Training</th>
+            <th rowspan="3">Inclusive Dates</th>
+            <th rowspan="3">Venue</th> 
+            <th colspan="3" rowspan="2">No. of participants by sex</th>
+            <th colspan="8" rowspan="2">No. of participants by category</th>
+            <th colspan="4" rowspan="2">For TVL Trainings Only</th>
+            <th rowspan="3">Total Persons Trained</th> <!-- 🟢 Added -->
+            <th colspan="5" rowspan="2">Number of days trained (please check)</th>
+            
+            <th rowspan="3">Number of days trained per weight of training</th>
+            <th rowspan="3">Total No. of trainees surveyed</th>
+            <th colspan="6">Client's rating on the training (relevance)</th>
+            <th colspan="6">Client's rating on the training (quality)</th>
+            <th colspan="6">Client's rating on the training (timeliness)</th>
+            <th rowspan="3">Overall Avg</th>
+            <th rowspan="3">Total number of clients requesting trainings</th>
+            <th rowspan="3">Total number of requests for trainings responded in the next 3 days</th>
+            <th colspan="3" rowspan="2">Estimated Expenses and source of fund</th>
+            <th rowspan="3">Weighted Persons</th>
+
+          </tr>
+          <tr></tr>
+          <tr>
+            <th>(c/o Extension Services)</th>
+            <th>Department / Unit</th>
+            <th>Contact Person / Training Coordinator</th>
+            <th>Number / Email</th>
+            <th>
+  <small class="subtext">e.g. BS Agriculture</small>
+</th>
+<th>
+  <small class="subtext">Training Coordinator</small>
+</th>
+
+<th>
+
+  <small class="subtext">
+    Use no. indicated under Internally Funded Extension Projects and Externally Funded Projects;
+    indicate NA if not under a project
+  </small>
+</th>
+
+<th>
+
+  <small class="subtext">
+    TVL–technical, vocational, livelihood; AE–agricultural and environmental trainings;
+    CE–continuing education for professionals; BE–basic education;
+    GAD–Gender and Development; O–others
+  </small>
+</th>
+
+            <th>Male</th>
+            <th>Female</th>
+            <th>Total</th>
+            <th>Student</th>
+            <th>Farmer</th>
+            <th>Fisherfolk</th>
+            <th>Agric. Tech</th>
+            <th>Govt Emp</th>
+            <th>Priv Emp</th>
+            <th>Other</th>
+            <th>Total</th>
+            <th>Solo Parent</th>
+            <th>4Ps</th>
+            <th>PWD</th>
+            <th>Type of Disability</th>
+            <th>5</th>
+            <th>3-4</th>
+            <th>2</th>
+            <th>1</th>
+            <th>less than 8hrs</th>
+            <th>5</th><th>4</th><th>3</th><th>2</th><th>1</th><th>Avg</th>
+            <th>5</th><th>4</th><th>3</th><th>2</th><th>1</th><th>Avg</th>
+            <th>5</th><th>4</th><th>3</th><th>2</th><th>1</th><th>Avg</th>
+            <th>Amount Charged to CvSU (campus/college/unit)</th>
+            <th>Amount Charged to Partner Agency (PhP)</th>
+            <th>Total number of requests for trainings responded in the next 3 days</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for e in entries %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>  </td>
+            <td class="ellipsis" title="{{ e.department }}">{{ e.department }}</td>
+            <td class="ellipsis" title="{{ e.contact_person }}">{{ e.contact_person }}</td>
+            <td class="ellipsis" title="{{ e.number_email }}">{{ e.number_email }}</td>
+            <td class="ellipsis" title="{{ e.related_curricular_offering }}">
+                {{ e.related_curricular_offering }}
+            </td>
+
+
+            <td class="ellipsis" title="{{ e.collaborating_agencies }}">{{ e.collaborating_agencies }}</td>
+            <td class="ellipsis" title="{{ e.contact_person }}">{{ e.contact_person }}</td>
+            <td class="ellipsis">Internal Funded Extension Projects</td>
+            <td class="ellipsis" title="{{ e.category }}">{{ e.category }}</td>
+            <td class="training-title ellipsis" title="{{ e.title }}">{{ e.title }}</td>
+            <td class="ellipsis" title="{{ e.date_conducted_text }}">{{ e.date_conducted_text }}</td>
+            <td class="ellipsis" title="{{ e.venue }}">{{ e.venue }}</td> 
+
+            <td>{{ e.male_participants }}</td>
+            <td>{{ e.female_participants }}</td>
+            <td>{{ e.total_participants }}</td>
+
+            <td>{{ e.student }}</td>
+            <td>{{ e.farmer }}</td>
+            <td>{{ e.fisherfolk }}</td>
+            <td>{{ e.agricultural_technician }}</td>
+            <td>{{ e.government_employee }}</td>
+            <td>{{ e.private_employee }}</td>
+            <td>{{ e.other_category }}</td>
+            <td>{{ e.total_by_category }}</td>
+
+            <td>{{ e.tvl_solo_parent }}</td>
+            <td>{{ e.tvl_4ps }}</td>
+            <td>{{ e.tvl_pwd }}</td>
+            <td class="disability ellipsis" title="{{ e.tvl_pwd_type }}">{{ e.tvl_pwd_type }}</td>
+            <td>{{ e.total_by_category }}</td> <!-- 🟢 Added -->
+<td>{% if e.number_of_days == 5 %}✓{% endif %}</td>
+<td>{% if e.number_of_days == 4 or e.number_of_days == 3 %}✓{% endif %}</td>
+<td>{% if e.number_of_days == 2 %}✓{% endif %}</td>
+<td>{% if e.number_of_days == 1 %}✓{% endif %}</td>
+
+<td>
+  {% if e.number_of_days != 1 and e.number_of_days != 2 and e.number_of_days != 3 and e.number_of_days != 4 and e.number_of_days != 5 %}
+      ✓
+  {% endif %}
+</td>
+
+
+
+
+
+
+
+
+            
+
+            <td>{{ e.weight_multiplier }}</td>
+            <td>{{ e.total_trainees_surveyed }}</td>
+
+            <td>{{ e.relevance_counts.5|default:0 }}</td>
+            <td>{{ e.relevance_counts.4|default:0 }}</td>
+            <td>{{ e.relevance_counts.3|default:0 }}</td>
+            <td>{{ e.relevance_counts.2|default:0 }}</td>
+            <td>{{ e.relevance_counts.1|default:0 }}</td>
+            <td>{{ e.relevance_average }}</td>
+
+            <td>{{ e.quality_counts.5|default:0 }}</td>
+            <td>{{ e.quality_counts.4|default:0 }}</td>
+            <td>{{ e.quality_counts.3|default:0 }}</td>
+            <td>{{ e.quality_counts.2|default:0 }}</td>
+            <td>{{ e.quality_counts.1|default:0 }}</td>
+            <td>{{ e.quality_average }}</td>
+
+            <td>{{ e.timeliness_counts.5|default:0 }}</td>
+            <td>{{ e.timeliness_counts.4|default:0 }}</td>
+            <td>{{ e.timeliness_counts.3|default:0 }}</td>
+            <td>{{ e.timeliness_counts.2|default:0 }}</td>
+            <td>{{ e.timeliness_counts.1|default:0 }}</td>
+            <td>{{ e.timeliness_average }}</td>
+
+          <td>{{ e.overall_average }}</td>
+          <td></td>
+          <td></td>
+          <td>{{ e.amount_charged_to_cvsu }}</td>
+          <td>{{ e.amount_charged_to_partner_agency }}</td>
+          <td></td>
+          <td>{{ e.weighted_persons }}</td>
+
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="48" class="text-center py-3">
+              No training entries yet. Click Preview to parse uploaded files.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ----------------- Responsive adjustments ----------------- */
+@media (max-width: 768px) {
+  h3 {
+    font-size: 1.2rem;
+  }
+  .table th,
+  .table td {
+    font-size: 0.8rem;
+    padding: 0.25rem;
+  }
+}
+
+/* ----------------- Table cells ----------------- */
+td,
+th {
+  vertical-align: middle !important;
+  min-width: 120px;
+  max-width: 350px;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Specific column widths */
+.training-title {
+  min-width: 250px;
+  max-width: 600px;
+  font-weight: 500;
+  text-align: left;
+  white-space: normal !important;
+}
+
+.disability {
+  min-width: 200px;
+  max-width: 400px;
+  text-align: left;
+  white-space: normal !important;
+}
+
+/* ----------------- Table responsiveness ----------------- */
+.table-responsive {
+  max-height: 70vh; /* vertical scroll */
+  overflow-y: auto;
+  overflow-x: auto; /* horizontal scroll if needed */
+}
+
+/* ----------------- Sticky Multi-row Header ----------------- */
+.table thead th {
+  position: sticky;
+  background-color: #d4edda;
+  text-align: center;
+  background-clip: padding-box;
+  z-index: 6;
+}
+
+/* Adjust top offsets for each header row */
+.table thead tr:nth-child(1) th {
+  top: 0; /* first header row */
+  z-index: 9;
+}
+.table thead tr:nth-child(2) th {
+  top: 38px; /* height of first header row */
+  z-index: 8;
+}
+.table thead tr:nth-child(3) th {
+  top: 76px; /* height of first + second rows */
+  z-index: 7;
+}
+
+/* Optional: subtle border to separate head from body */
+.table thead {
+  border-bottom: 2px solid #c3e6cb;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+}
+
+
+/* ----------------- Subtext ----------------- */
+.subtext {
+  display: block;
+  font-size: 10px;
+  color: #8c8c8c;
+  font-weight: 400;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* ----------------- Ellipsis ----------------- */
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
+
+
+
+{% endblock %}

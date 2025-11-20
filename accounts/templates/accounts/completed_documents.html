@@ -1,0 +1,32 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+{% block title %}Completed Documents{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/completed_documents.css' %}">
+
+<div class="completed-documents-wrapper container mt-5">
+    <div class="completed-documents-card">
+        <h2 class="completed-title">📄 Completed Documents</h2>
+
+        <div class="scrollable-list">
+            <ul class="completed-list">
+                {% for doc in documents %}
+                    <li class="completed-item">
+                        <div class="doc-details">
+                            <span class="doc-name">{{ doc.name }}</span>
+                            {% if doc.department %}
+                                <small class="doc-dept">Department: {{ doc.department }}</small>
+                            {% endif %}
+                        </div>
+                        <span class="status-badge">{{ doc.get_status_display }}</span>
+                        <a href="{% url 'view_document' doc.id %}" class="btn-view">View</a>
+                    </li>
+                {% empty %}
+                    <li class="completed-item empty">No completed documents.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

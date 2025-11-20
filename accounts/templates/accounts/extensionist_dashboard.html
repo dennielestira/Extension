@@ -1,0 +1,282 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<style>
+body {
+    background-color: #e8f5e9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}
+
+/* Welcome Card */
+.dashboard-card {
+    background: linear-gradient(135deg, #22b14c, #0d8331);
+    color: white;
+    border-radius: 15px;
+    text-align: center;
+}
+.dashboard-title {
+    font-weight: bold;
+    font-size: 2rem;
+}
+.dashboard-description {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+.btn-logout {
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+}
+.btn-logout:hover {
+    background-color: white;
+    color: #dc3545;
+}
+
+/* Page layout */
+.content-wrapper, .main-card, .container-fluid {
+    max-width: 1100px !important;
+    margin: 0 auto !important;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Main container card */
+.main-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+.main-card .row {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.main-card .col-lg-5,
+.main-card .col-lg-7 {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 100%;
+    min-height: 0;
+}
+
+/* Left updates box */
+.updates-box {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    border-radius: 6px;
+    background: #fff;
+    max-height: 300px;
+}
+
+/* Status grid */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+.status-box {
+    padding: 8px;
+    border-radius: 6px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+}
+.status-title {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 4px;
+}
+.status-content {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.3;
+}
+
+/* Scrollbars */
+.updates-box::-webkit-scrollbar,
+.status-content::-webkit-scrollbar {
+    width: 5px;
+}
+.updates-box::-webkit-scrollbar-thumb,
+.status-content::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 3px;
+}
+
+/* Status colors */
+.status-pending { background-color: #fff8e1; }
+.status-recommended { background-color: #e8f5e9; }
+.status-approved { background-color: #e3f2fd; }
+.status-rejected { background-color: #ffebee; }
+.status-ongoing { background-color: #ede7f6; }
+.status-completion-processing { background-color: #f5f5f5; }
+.status-completion-recommended { background-color: #e8f5e9; }
+.status-completed { background-color: #f1f8e9; }
+
+/* Revision section */
+.department-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+.department-box {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.department-box:hover { background: #f1f1f1; }
+.revision-card {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #fff8e1;
+    border: 1px solid #ffcc80;
+}
+.revision-warning {
+    color: #d32f2f;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .dashboard-title { font-size: 1.6rem; }
+    .status-box { min-height: 130px; }
+}
+@media (max-width: 768px) {
+    .main-card .row { flex-direction: column; }
+    .col-lg-5, .col-lg-7 { width: 100%; }
+    .status-grid { grid-template-columns: 1fr; }
+    .updates-box { max-height: 200px; }
+}
+@media (max-width: 480px) {
+    .dashboard-title { font-size: 1.4rem; }
+    .dashboard-description { font-size: 1rem; }
+    .status-box { min-height: auto; }
+    .status-title { font-size: 0.85rem; }
+    .status-content { font-size: 0.8rem; }
+}
+</style>
+
+<div class="container-fluid py-3">
+    <!-- Welcome header -->
+    <div class="dashboard-card p-4 shadow-lg mb-5">
+        <h1 class="dashboard-title mb-3">Welcome, <span class="role">{{ user.full_name }}</span> 👋</h1>
+        <p class="dashboard-description">This is the Extensionist Dashboard where you can track and manage your assigned documents.</p>
+        <a href="{% url 'logout' %}" class="btn btn-outline-light btn-logout mt-4">Logout</a>
+    </div>
+
+    <!-- Main Card -->
+    <div class="main-card">
+        <div class="row g-3">
+            <!-- Left -->
+            <div class="col-lg-5">
+                <div class="section-title">📄 All Document Updates</div>
+                <div class="updates-box">
+                    {% if recent_updates %}
+                        {% for doc in recent_updates %}
+                            <p><strong>{{ doc.name }}</strong> became 
+                                <em>{{ doc.get_status_display }}</em>
+                                <span class="text-muted">{{ doc.status_updated_at|naturaltime }}</span>
+                            </p>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No recent updates</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right -->
+            <div class="col-lg-7">
+                <div class="status-grid">
+                    {% for status in status_data %}
+                        <div class="status-box 
+                            {% with status.label|lower|slugify as slabel %}
+                                status-{{ slabel }}
+                            {% endwith %}
+                        ">
+                            <div class="status-title">{{ status.label }}</div>
+                            <div class="status-content">
+                                {% if status.documents %}
+                                    {% for doc in status.documents %}
+                                        <p><strong>{{ doc.name }}</strong>
+                                            <span class="text-muted">{{ doc.status_updated_at|naturaltime }}</span>
+                                        </p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">No documents</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Revision Section -->
+<div class="mt-5">
+    <h4>📂 Department Revisions</h4>
+    <div class="department-grid">
+        {% for dept in departments %}
+            <div class="department-box" onclick="toggleRevisionCard('{{ dept.id }}')">
+                <div class="department-title">{{ dept.name }}</div>
+                <small>{{ dept.documents_with_revisions|length }} file(s) need revision</small>
+
+                <!-- Hidden Revision Card -->
+                <div id="revision-card-{{ dept.id }}" class="revision-card">
+                    <h6>⚠ Revision Needed Files</h6>
+                    <div class="revision-list">
+                        {% if dept.documents_with_revisions %}
+                            {% for doc in dept.documents_with_revisions %}
+                                <div class="revision-doc mb-2">
+                                    <strong>
+                                        <a href="{% url 'view_document' doc.id %}">{{ doc.name }}</a>
+                                    </strong>
+                                    <ul class="mb-1">
+                                        {% for file in doc.revision_files %}
+                                            <li>{{ file }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">No documents need revision</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- JS Toggle -->
+<script>
+function toggleRevisionCard(deptId) {
+    const card = document.getElementById("revision-card-" + deptId);
+    card.style.display = (card.style.display === "block") ? "none" : "block";
+}
+</script>
+
+{% endblock %}

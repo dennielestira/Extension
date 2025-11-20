@@ -1,0 +1,61 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/extensionist_form.css' %}">
+
+<div class="extensionist-container">
+    <div class="extensionist-box">
+        <div class="extensionist-form">
+            <div class="logo-row">
+                <img src="{% static 'image/logo.png' %}" alt="CVSU Logo">
+                <img src="{% static 'image/logo2.png' %}" alt="CVSU Logo 2">
+            </div>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <h2>
+                {% if project %}Edit{% else %}Add{% endif %} Extension Project to Report: <strong>{{ report.year }}</strong>
+            </h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="error-message">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="error-message">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="submit">
+                    <button type="submit">
+                        {% if project %}Update{% else %}Save{% endif %} Project
+                    </button>
+                    <a href="{% url 'view_quarterly_report' report.id %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

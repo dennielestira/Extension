@@ -1,0 +1,103 @@
+{% extends 'accounts/main.html' %}
+{% load static %}
+
+{% block title %}Video{% endblock %}
+
+{% block content %}
+<div class="w3-content" style="max-width:1200px; margin: auto; position: relative; overflow: hidden;">
+    <div style="position: relative; width: 100%; padding-top: 56.25%; overflow: hidden;">
+
+        {% for i in "12345" %}
+        <video class="mySlides" id="video{{ i }}" onclick="playVideo({{ i }})"
+       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; transition: opacity 1s ease-in-out;">
+            <source data-src="{% static 'video/video'|add:i|add:'.mp4' %}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        {% endfor %}
+    </div>
+
+    <div id="ppt-display" style="display: none; text-align: center; margin-top: 30px;">
+        <img src="{% static 'image/BACOOREx Overview.pptx' %}" 
+             alt="PPT Slide" 
+             style="width: 80%; max-width: 800px; border-radius: 10px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);" />
+    </div>
+
+    <!-- Thumbnails -->
+    <div class="w3-section" style="display: flex; justify-content: space-between; margin-top: 20px;">
+        {% for image in images %}
+        <img class="demo w3-opacity w3-hover-opacity-off"
+             src="{% static 'image/'|add:image %}"
+             style="width:19%; cursor: pointer; transition: transform 0.3s ease;"
+             onclick="currentDiv({{ forloop.counter }})">
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+var slideIndex = 1;
+
+const captions = [
+    { title: "Molino II, Interview", description: "" },
+    { title: "MOA Signing", description: "" },
+    { title: "Perfume Making Program for BJMP", description: "" },
+    { title: "Mambog Perfume Making Livelihood Program", description: "" },
+    { title: "Molino II", description: "" }
+];
+
+function currentDiv(n) {
+    showDivs(slideIndex = n);
+}
+
+function showDivs(n) {
+    var x = document.getElementsByClassName("mySlides");
+    var dots = document.getElementsByClassName("demo");
+    if (n > x.length) { slideIndex = 1 }
+    if (n < 1) { slideIndex = x.length }
+
+    for (var i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+        x[i].pause();
+    }
+
+    var selectedVideo = x[slideIndex - 1];
+    var source = selectedVideo.querySelector("source");
+    if (!selectedVideo.src) {
+        selectedVideo.src = source.getAttribute("data-src");
+        selectedVideo.load();
+    }
+
+    selectedVideo.style.display = "block";
+    selectedVideo.play();
+
+    for (i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" w3-opacity-off", "");
+    }
+    dots[slideIndex - 1].className += " w3-opacity-off";
+}
+
+function playVideo(n) {
+    var videos = document.getElementsByClassName("mySlides");
+    for (var i = 0; i < videos.length; i++) {
+        if (i + 1 !== n) {
+            videos[i].pause();
+        }
+    }
+}
+
+function showSlideshow() {
+    document.getElementById("cover-video").pause();
+    document.getElementById("cover-container").style.display = "none";
+    document.getElementById("slideshow-container").style.display = "block";
+    currentDiv(1);
+}
+
+document.querySelectorAll('.demo').forEach(thumbnail => {
+    thumbnail.addEventListener('mouseenter', function () {
+        this.style.transform = 'scale(1.1)';
+    });
+    thumbnail.addEventListener('mouseleave', function () {
+        this.style.transform = 'scale(1)';
+    });
+});
+</script>
+{% endblock %}

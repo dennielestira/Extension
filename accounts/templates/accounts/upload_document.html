@@ -1,0 +1,165 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+{% block title %}Upload Document{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/upload.css' %}">
+
+<div class="upload-container">
+    <h2 class="upload-title">Upload Document</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="upload-form shadow-sm">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_name">Document Name</label>
+            <input type="text" name="name" id="id_name" class="form-control" placeholder="Enter document name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="id_Activity_Proposal">Activity Proposal <span class="required">*</span></label>
+            <input type="file" name="Activity_Proposal" id="id_Activity_Proposal" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="id_Work_and_Financial_Plan">Work and Financial Plan (Optional)</label>
+            <input type="file" name="Work_and_Financial_Plan" id="id_Work_and_Financial_Plan" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="id_Plan_of_Activities">Plan of Activities (Optional)</label>
+            <input type="file" name="Plan_of_Activities" id="id_Plan_of_Activities" class="form-control">
+        </div>
+
+        <!-- Extra Documents Toggle -->
+        <div class="form-group">
+            <button type="button" id="toggle-extra" class="btn btn-outline-success w-100 mb-3">
+                + Add Extra Documents
+            </button>
+        </div>
+
+        <div id="extra-documents" style="display: none;">
+            <div class="form-group">
+                <label for="id_doc4">Extra Document 1 (Optional)</label>
+                <input type="file" name="doc4" id="id_doc4" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="id_doc5">Extra Document 2 (Optional)</label>
+                <input type="file" name="doc5" id="id_doc5" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="id_doc6">Extra Document 3 (Optional)</label>
+                <input type="file" name="doc6" id="id_doc6" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="id_doc7">Extra Document 4 (Optional)</label>
+                <input type="file" name="doc7" id="id_doc7" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="id_doc8">Extra Document 5 (Optional)</label>
+                <input type="file" name="doc8" id="id_doc8" class="form-control">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit w-100 mt-3">Upload Document</button>
+    </form>
+</div>
+
+<style>
+/* Container */
+.upload-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-left: 6px solid #28a745;
+    border-radius: 10px;
+}
+
+/* Title */
+.upload-title {
+    text-align: center;
+    color: #28a745;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+/* Form group spacing */
+.upload-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+/* Labels */
+.upload-form label {
+    font-weight: 500;
+    color: #333;
+}
+
+/* Required asterisk */
+.required {
+    color: #dc3545;
+}
+
+/* Inputs */
+.upload-form .form-control {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Buttons */
+.btn-submit, #toggle-extra {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #fff;
+    font-weight: 500;
+    padding: 0.6rem 1rem;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+#toggle-extra {
+    background-color: #fff;
+    color: #28a745;
+    border: 2px solid #28a745;
+}
+
+#toggle-extra:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.btn-submit:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .upload-container {
+        padding: 1rem;
+        margin: 1rem;
+    }
+    .upload-title {
+        font-size: 1.4rem;
+    }
+}
+</style>
+
+<script>
+document.getElementById('toggle-extra').addEventListener('click', function() {
+    const extra = document.getElementById('extra-documents');
+    if (extra.style.display === 'none') {
+        extra.style.display = 'block';
+        this.textContent = '- Hide Extra Documents';
+    } else {
+        extra.style.display = 'none';
+        this.textContent = '+ Add Extra Documents';
+    }
+});
+</script>
+
+{% endblock %}

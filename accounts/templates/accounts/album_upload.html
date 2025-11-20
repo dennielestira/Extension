@@ -1,0 +1,103 @@
+{% extends 'accounts/main.html' %}
+{% load static %}
+
+{% block title %}
+    {% if album %}Edit Album{% else %}Create Album{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="padding-top: 150px;">
+    <div style="max-width:650px; margin:auto; padding:30px; background:white; border-radius:15px; box-shadow:0px 6px 15px rgba(0,0,0,0.15);">
+
+        <h2 style="text-align:center; color:#28a745; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-bottom:25px;">
+            {% if album %}
+                ✏️ Edit Album: <strong>{{ album.title }}</strong>
+            {% else %}
+                📂 Create a New Album
+            {% endif %}
+        </h2>
+
+        <form method="post" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap:15px;">
+            {% csrf_token %}
+
+            <div>
+                {{ form.title.label_tag }}
+                {{ form.title }}
+            </div>
+
+            <div>
+                {{ form.description.label_tag }}
+                {{ form.description }}
+            </div>
+
+            <div>
+                {{ form.cover_photo.label_tag }}
+                {{ form.cover_photo }}
+            </div>
+
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                <a href="{% url 'home2' %}" 
+                   style="padding:10px 18px; background:#6c757d; color:white; 
+                          text-decoration:none; border-radius:8px; 
+                          transition:0.3s ease;">
+                    ← Back
+                </a>
+
+                <button type="submit" 
+                    style="padding:12px 20px; background:#28a745; color:white; 
+                           border:none; border-radius:8px; font-size:16px; 
+                           cursor:pointer; transition:0.3s ease;">
+                    {% if album %}💾 Update Album{% else %}➕ Create Album{% endif %}
+                </button>
+            </div>
+        </form>
+
+        {% if album and album.cover %}
+        <div style="text-align:center; margin-top:25px;">
+            <p style="font-weight:bold; margin-bottom:10px;">Current Album Cover:</p>
+            <img src="{{ album.cover.url }}" alt="Album Cover" 
+                 style="max-height:250px; border-radius:10px; box-shadow:0px 4px 12px rgba(0,0,0,0.2);">
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    form p {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    form label {
+        margin-bottom: 6px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    form input, form select, form textarea {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+        width: 100%;
+        transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    form input:focus, form select:focus, form textarea:focus {
+        border-color: #28a745;
+        box-shadow: 0px 0px 6px rgba(40,167,69,0.4);
+    }
+
+    a:hover {
+        background:#5a6268;
+    }
+
+    button:hover {
+        background:#218838;
+        transform: translateY(-2px);
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}

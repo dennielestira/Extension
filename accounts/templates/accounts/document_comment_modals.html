@@ -1,0 +1,64 @@
+{% for name, title in [
+  ('Activity_Proposal', 'Activity Proposal'),
+  ('Work_and_Financial_Plan', 'Work and Financial Plan'),
+  ('Plan_of_Activities', 'Plan of Activities'),
+  ('doc4', 'Extra Document 1'),
+  ('doc5', 'Extra Document 2'),
+  ('doc6', 'Extra Document 3'),
+  ('doc7', 'Extra Document 4'),
+  ('doc8', 'Extra Document 5')
+] %}
+<!-- Add Comment Modal -->
+<div class="modal fade" id="addCommentModal_{{ name }}" tabindex="-1" aria-labelledby="addCommentModalLabel_{{ name }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title">Add Revision Comment – {{ title }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="revision_doc" value="{{ name }}">
+          <textarea name="revision_comment" class="form-control mb-3" rows="3" placeholder="Write your comment..."></textarea>
+          <label class="form-label">Optional Image</label>
+          <input type="file" name="revision_image" class="form-control" accept="image/*">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" name="submit_comment" class="btn btn-warning">Submit Comment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View Comments Modal -->
+<div class="modal fade" id="viewCommentModal_{{ name }}" tabindex="-1" aria-labelledby="viewCommentModalLabel_{{ name }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Revision Comments – {{ title }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        {% for feedback in revision_feedbacks %}
+          {% if feedback.slot_name == name %}
+            <div class="border rounded p-2 mb-2">
+              <strong>{{ feedback.user.get_full_name|default:feedback.user.username }}</strong>
+              <small class="text-muted">{{ feedback.created_at|date:"M d, Y h:i A" }}</small>
+              <p class="mb-1">{{ feedback.comment }}</p>
+              {% if feedback.image %}
+                <a href="{{ feedback.image.url }}" target="_blank">
+                  <img src="{{ feedback.image.url }}" class="img-thumbnail" style="max-width:150px;">
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% empty %}
+          <p class="text-muted">No comments yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}

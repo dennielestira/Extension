@@ -1,0 +1,56 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/extensionists_list.css' %}">
+<div class="extensionists-wrapper container mt-5">
+    <h2 class="mb-4 text-center">🌱 Extensionists</h2>
+
+    <div class="single-table-wrapper">
+        <table class="table table-bordered extensionists-table">
+            <thead>
+                <tr>
+                    <th>Department</th>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Contact Number</th>
+                    <th>Gender</th>  <!-- ✅ Added -->
+                    <th>Actions</th> <!-- New column for Delete -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for department, users in grouped_extensionists.items %}
+                    {% for user in users %}
+                        <tr>
+                            {% if forloop.first %}
+                                <td rowspan="{{ users|length }}">{{ department }}</td>
+                            {% endif %}
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.full_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.contact_number }}</td>
+                            <td>{{ user.get_gender_display }}</td>  <!-- ✅ Added -->
+                            <td>
+                                {% if request.user.account_type == 'Staff Extensionist' or request.user.account_type == 'Campus Admin' %}
+                                    <form method="post" action="{% url 'delete_extensionist' user.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Are you sure you want to delete {{ user.full_name }}?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted">No action</span>
+                                {% endif %}
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                {% empty %}
+                    <tr><td colspan="7" class="text-center text-muted">No extensionists found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

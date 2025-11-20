@@ -1,0 +1,71 @@
+{% extends "accounts/home.html" %}
+{% block content %}
+<div class="container mt-5">
+
+  <!-- Page Header -->
+  <div class="card shadow-sm mb-4 border-0 rounded-3">
+    <div class="card-body">
+      <h3 class="card-title text-primary fw-bold">{{ quarter_label }} {{ year }}</h3>
+      <p class="card-text text-muted">
+        Quarterly Training Reports overview
+      </p>
+      <a href="{% url 'quarterly_report_list' %}" class="btn btn-outline-secondary btn-sm">
+        ← Back to Quarters
+      </a>
+    </div>
+  </div>
+
+  <!-- Uploaded Reports -->
+  <div class="card shadow-sm border-0 rounded-3 mb-4">
+    <div class="card-header bg-primary text-white fw-semibold d-flex flex-wrap justify-content-between align-items-center">
+      <span class="mb-2 mb-md-0">Uploaded Training Reports</span>
+      <div>
+        <!-- Open Button -->
+        <a href="{% url 'open_day_training_reports' quarter year %}" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-folder2-open"></i> Open
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <!-- Responsive Table Wrapper -->
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Title</th>
+              <th>Day</th>
+              <th>Document</th>
+              <th>File</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for report in reports %}
+              <tr>
+                <td>{{ report.title }}</td>
+                <td>{{ report.day.name }} <br><small class="text-muted">{{ report.day.date }}</small></td>
+                <td>{{ report.day.document.name }}</td>
+                <td>
+                  <a href="{{ report.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                    Download
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-3">
+                  No reports in this quarter.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+{% endblock %}

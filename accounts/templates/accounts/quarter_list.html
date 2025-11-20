@@ -1,0 +1,37 @@
+{% extends "accounts/home.html" %}
+{% block content %}
+<div class="container py-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">
+      📊 Quarterly Training Reports
+    </h3>
+  </div>
+
+  <!-- Report List Card -->
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-4">
+      {% if quarters %}
+        <div class="list-group list-group-flush">
+          {% for key, year, label in quarters %}
+            <div class="list-group-item d-flex justify-content-between align-items-center py-3 px-2 border-0 border-bottom">
+              <div>
+                <h6 class="mb-0 fw-semibold">{{ label }} ({{ year }})</h6>
+                <small class="text-muted">View and manage reports for this quarter</small>
+              </div>
+              <a href="{% url 'quarterly_reports_detail' key year %}" class="btn btn-primary btn-sm px-3 rounded-pill">
+                View Reports
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="bi bi-clipboard-x text-muted" style="font-size: 2rem;"></i>
+          <p class="text-muted mt-3">No training reports uploaded yet.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

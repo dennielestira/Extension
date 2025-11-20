@@ -1,0 +1,56 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/annual_report.css' %}">
+<div class="extensionist-container">
+    <div class="extensionist-box">
+        <div class="extensionist-form">
+            <div class="logo-row">
+                <img src="{% static 'image/logo.png' %}" alt="CVSU Logo">
+                <img src="{% static 'image/logo2.png' %}" alt="Second Logo">
+            </div>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <h2 class="form-title">
+                {% if report %}Edit{% else %}Create{% endif %} Annual Report
+            </h2>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="error">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="field-error">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="submit">
+                    <button type="submit">
+                        {% if report %}Update{% else %}Create{% endif %} Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

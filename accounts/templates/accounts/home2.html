@@ -1,0 +1,522 @@
+{% extends 'accounts/main.html' %}
+{% load static %}
+
+{% block title %}Objectives & Media Gallery{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/objectives.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="{% static 'css/public.css' %}">
+
+
+
+<!-- Media Gallery Header -->
+<section id="media-gallery">
+    <div class="gallery-header">
+        <h2>Cavite State University Extension Service - Bacoor Campus</h2>
+
+    </div>
+</section>
+
+
+<section id="albums">
+    <h3 class="section-title">Photo Albums</h3>
+
+    {% if user.is_authenticated %}
+    <div class="upload-buttons" style="margin-bottom: 15px;">
+        <!-- Button to upload a new album -->
+        <a href="{% url 'album_upload' %}" class="btn btn-primary">+ Upload Album</a>
+    </div>
+    {% endif %}
+
+    <div class="album-grid">
+        {% for album in albums %}
+        <div class="album-card" data-album-id="{{ album.id }}">
+            <!-- Use cover_url property -->
+            <img src="{{ album.cover_url }}"
+                 alt="{{ album.title }}"
+                 data-album-title="{{ album.title }}">
+            <div class="overlay">
+                <p>{{ album.title }}</p>
+            </div>
+            <!-- hidden photos for modal -->
+            <div class="album-photos" style="display:none;">
+                {% for photo in album.photos.all %}
+                    <img src="{{ photo.image_url }}"
+                        alt="{{ photo.caption|default:album.title }}"
+                        data-photo-id="{{ photo.id }}"
+                        data-description="{{ photo.caption|default:album.description|default:'No description' }}">
+                {% endfor %}
+            </div>
+
+        </div>
+        {% empty %}
+        <p>No albums available.</p>
+        {% endfor %}
+    </div>
+    <!-- Album Pagination -->
+<div class="pagination">
+    {% if albums.has_previous %}
+        <a href="?album_page={{ albums.previous_page_number }}#albums" class="page-btn">« Prev</a>
+    {% endif %}
+
+    <span class="page-info">Page {{ albums.number }} of {{ albums.paginator.num_pages }}</span>
+
+    {% if albums.has_next %}
+        <a href="?album_page={{ albums.next_page_number }}#albums" class="page-btn">Next »</a>
+    {% endif %}
+</div>
+
+
+</section>
+
+<div id="albumModal" class="album-modal" aria-hidden="true">
+  <div class="album-modal-inner">
+    <span class="album-modal-close" onclick="closeAlbumModal()">&times;</span>
+
+    <!-- album navigation outside the box -->
+    <span class="album-modal-nav album-prev" onclick="changeAlbum(-1)" title="Previous album">&#10094; Album</span>
+
+    <div class="album-modal-body">
+      <!-- LEFT: image + photo navigation -->
+        <!-- LEFT: image + photo navigation -->
+<div class="album-left">
+  <div class="album-image-wrapper" style="position:relative;">
+      <img id="modalAlbumImage" class="album-modal-image" src="" alt="Album photo">
+
+      <!-- photo navigation -->
+      <button class="photo-nav photo-prev" onclick="changeAlbumPhoto(-1)" aria-label="Previous photo">&#10094;</button>
+      <button class="photo-nav photo-next" onclick="changeAlbumPhoto(1)" aria-label="Next photo">&#10095;</button>
+
+<!-- photo edit/delete buttons overlay -->
+{% if user.is_authenticated %}
+<div class="photo-actions"
+     style="position:absolute; bottom:10px; left:10px; z-index:20; display:flex; gap:6px;">
+      <a id="modalEditPhotoBtn"
+         href="#"
+         class="btn btn-warning btn-sm"
+         data-template-url="{% url 'photo_edit' 0 %}">
+         ✎ Edit
+      </a>
+
+      <!-- Delete Photo -->
+      <form id="modalDeletePhotoForm" method="POST" style="display:inline;"
+            data-template-url="{% url 'delete_photo' 0 %}" action="#">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger"
+                  onclick="return confirm('Delete this photo?');">
+              🗑 Delete
+          </button>
+      </form>
+</div>
+{% endif %}
+
+  </div>
+
+  <div id="modalPhotoCounter" class="photo-counter"></div>
+</div>
+
+<!-- RIGHT: title / description / upload -->
+<div class="album-right">
+  <h3 id="modalAlbumCaption"></h3>
+  <p id="modalAlbumDescription"></p>
+
+<div style="margin-top:8px;">
+  {% if user.is_authenticated %}
+  <div class="dropdown">
+    <!-- Dropdown Toggle Button -->
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="albumActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      Album Actions
+    </button>
+
+    <!-- Dropdown Menu -->
+    <ul class="dropdown-menu" aria-labelledby="albumActionsDropdown">
+      <li>
+        <a class="dropdown-item text-white" 
+           style="background-color:#ffc107;" 
+           id="modalEditAlbumBtn"
+           data-template-url="{% url 'album_edit' 0 %}">
+           ✎ Edit Album
+        </a>
+      </li>
+      <li>
+        <form id="modalDeleteAlbumForm" method="POST" style="margin:0;" 
+              data-template-url="{% url 'delete_album' 0 %}" action="#">
+          {% csrf_token %}
+          <button type="submit" class="dropdown-item text-white" 
+                  style="background-color:#dc3545;"
+                  onclick="return confirm('Delete this album?');">
+            🗑 Delete Album
+          </button>
+        </form>
+      </li>
+      <li>
+        <a class="dropdown-item text-white" 
+           style="background-color:#0d6efd;" 
+           id="modalUploadPhotoBtn"
+           data-template-url="{% url 'photo_upload' 0 %}">
+           ⬆ Upload Photo
+        </a>
+      </li>
+    </ul>
+  </div>
+  {% endif %}
+</div>
+
+</div>
+    </div>
+
+    <!-- album navigation outside the box -->
+    <span class="album-modal-nav album-next" onclick="changeAlbum(1)" title="Next album">Album &#10095;</span>
+  </div>
+</div>
+
+
+
+
+
+
+
+<!-- Videos Section -->
+<section id="videos">
+    <h3 class="section-title">Videos</h3>
+        {% if user.is_authenticated %}
+        <a href="{% url 'media_upload' %}" class="upload-btn">+ Upload New</a>
+        {% endif %}
+    <div class="media-grid">
+        {% for video in video_page_obj %}
+        <div class="media-card">
+            <video 
+                controls preload="metadata" loading="lazy"
+                style="width:100%; border-radius:8px; max-height:250px; cursor:pointer;"
+                data-title="{{ video.title }}"
+                data-description="{{ video.description|default_if_none:'No description available.' }}"
+                data-src="{{ video.file.url }}">
+                <source src="{{ video.file.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p>{{ video.title }}</p>
+            {% if user.is_authenticated %}
+            <div class="action-links d-flex justify-content-center gap-2">
+                <a href="{% url 'media_edit' video.pk %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <form method="post" action="{% url 'media_delete' video.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Are you sure you want to delete {{ video.title }}?');">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="empty-msg">No videos uploaded.</p>
+        {% endfor %}
+    </div>
+
+<!-- Video Pagination -->
+<div class="pagination">
+    {% if video_page_obj.has_previous %}
+        <a href="?video_page={{ video_page_obj.previous_page_number }}#videos" class="page-btn">← Previous</a>
+    {% endif %}
+
+    <span class="page-info">
+        Page {{ video_page_obj.number }} of {{ video_page_obj.paginator.num_pages }}
+    </span>
+
+    {% if video_page_obj.has_next %}
+        <a href="?video_page={{ video_page_obj.next_page_number }}#videos" class="page-btn">Next →</a>
+    {% endif %}
+</div>
+
+</section>
+
+
+<!-- Video Modal -->
+<div id="videoModal" class="album-modal" aria-hidden="true" style="display:none;">
+  <div class="album-modal-inner">
+    <span class="album-modal-close" onclick="closeVideoModal()">&times;</span>
+
+    <div class="album-modal-body">
+      <!-- LEFT: Video -->
+      <div class="album-left">
+        <video id="modalVideo" controls style="width:100%; max-height:70vh; background:#000;">
+          <source src="" type="video/mp4">
+          Your browser does not support HTML video.
+        </video>
+      </div>
+
+      <!-- RIGHT: Title and Description -->
+      <div class="album-right">
+        <h3 id="videoCaption"></h3>
+        <p id="videoDescription"></p>
+      </div>
+    </div>
+
+    <!-- navigation -->
+    <span class="album-modal-nav album-prev" onclick="changeVideo(-1)">&#10094; Prev</span>
+    <span class="album-modal-nav album-next" onclick="changeVideo(1)">Next &#10095;</span>
+  </div>
+</div>
+
+<section class="image-showcase" id="image">
+
+  <div class="showcase-container">
+
+    <div class="showcase-item"><img src="/static/image/20.jpg" alt="Image 1"></div>
+    <div class="showcase-item"><img src="/static/image/rank.png" alt="Image 2"></div>
+    <div class="showcase-item"><img src="/static/image/19.jpg" alt="Image 3"></div>
+    <div class="showcase-item"><img src="/static/image/15.jpg" alt="Image 4"></div>
+    <div class="showcase-item"><img src="/static/image/18.jpg" alt="Image 5"></div>
+    <div class="showcase-item"><img src="/static/image/17.jpg" alt="Image 6"></div>
+    <div class="showcase-item"><img src="/static/image/16.jpg" alt="Image 7"></div>
+    <div class="showcase-item"><img src="/static/image/13.jpg" alt="Image 8"></div>
+    <div class="showcase-item"><img src="/static/image/14.jpg" alt="Image 9"></div>
+    <div class="showcase-item"><img src="/static/image/12.jpg" alt="Image 10"></div>
+    <div class="showcase-item"><img src="/static/image/11.jpg" alt="Image 11"></div>
+    <div class="showcase-item"><img src="/static/image/10.jpg" alt="Image 12"></div>
+    <div class="showcase-item"><img src="/static/image/9.jpg" alt="Image 13"></div>
+    <div class="showcase-item"><img src="/static/image/8.jpg" alt="Image 14"></div>
+    <div class="showcase-item"><img src="/static/image/7.jpg" alt="Image 15"></div>
+    <div class="showcase-item"><img src="/static/image/6.jpg" alt="Image 16"></div>
+    <div class="showcase-item"><img src="/static/image/5.jpg" alt="Image 17"></div>
+    <div class="showcase-item"><img src="/static/image/3.jpg" alt="Image 18"></div>
+    <div class="showcase-item"><img src="/static/image/4.jpg" alt="Image 19"></div>
+    <div class="showcase-item"><img src="/static/image/2.jpg" alt="Image 20"></div>
+
+  </div>
+</section>
+<div class="fb-section text-center">
+  <a href="https://www.facebook.com/BACOOREx" target="_blank">
+    <img src="{% static 'image/image.png' %}" alt="Facebook" class="fb-logo">
+  </a>
+  <div class="fb-info mt-2">
+    <strong>CvSU Bacoor Campus Extension Services</strong><br>
+    <a href="https://www.facebook.com/BACOOREx" target="_blank">
+      https://www.facebook.com/groups/409413203281698/
+    </a>
+  </div>
+</div>
+
+<div class="project text-center">
+  <p><strong>Project 1:</strong><br>
+  <em>Empowering Community through Holistic Development Program</em><br>
+  FB Page: <a href="https://www.facebook.com/DASextensionservices" target="_blank">
+  https://www.facebook.com/DASextensionservices</a></p>
+
+  <p><strong>Project 2:</strong><br>
+  <em>Computer Literacy and System Support Extension Services (CLASSES)</em><br>
+  FB Page: <a href="https://www.facebook.com/_DCSBacoor: CLASSES Extension Program" target="_blank">
+  https://www.facebook.com/_DCSBacoor: CLASSES Extension Program</a></p>
+
+  <p><strong>Project 3:</strong><br>
+  <em>Community Resiliency and Intervention Mentoring (CRIM)</em><br>
+  FB Page: <a href="https://www.facebook.com/Cvsu Bacoor Criminology Research and Extension" target="_blank">
+  https://www.facebook.com/Cvsu Bacoor Criminology Research and Extension</a></p>
+
+  <p><strong>Project 4:</strong><br>
+  <em>Kaagapay sa Kabuhayan tungo sa Kaunlaran (KKK)</em><br>
+  FB Page: <a href="https://www.facebook.com/Cavite State University Bacoor City Campus: DMS Extension Services" target="_blank">
+  https://www.facebook.com/Cavite State University Bacoor City Campus: DMS Extension Services</a></p>
+
+  <p><strong>Project 5:</strong><br>
+  <em>Teaching for Enrichment and Development (TED)</em><br>
+  FB Page: <a href="https://www.facebook.com/DTE Extension Page" target="_blank">
+  https://www.facebook.com/DTE Extension Page</a></p>
+</div>
+
+
+
+<script>
+/* ---------- Global Variables ---------- */
+let videoIndex = 0;
+let videos = [];
+let albums = [];
+let currentAlbumIndex = 0;
+let currentPhotoIndex = 0;
+
+/* ---------- DOMContentLoaded ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* ----- Initialize Videos ----- */
+    videos = Array.from(document.querySelectorAll(".media-card video"));
+    videos.forEach((vid, index) => {
+        vid.addEventListener("click", e => {
+            e.preventDefault();
+            vid.pause();
+            openVideoModal(index);
+        });
+        const card = vid.closest('.media-card');
+        if (card) {
+            card.addEventListener('click', e => { if(e.target !== vid) openVideoModal(index); });
+        }
+    });
+
+    /* ----- Initialize Albums ----- */
+    initAlbums();
+
+    /* ----- Keyboard Navigation ----- */
+    document.addEventListener("keydown", e => {
+        const videoModalVisible = getComputedStyle(document.getElementById('videoModal')).display === 'flex';
+        const albumModalVisible = getComputedStyle(document.getElementById('albumModal')).display === 'flex';
+
+        if (videoModalVisible) {
+            if (e.key === "ArrowLeft") changeVideo(-1);
+            if (e.key === "ArrowRight") changeVideo(1);
+            if (e.key === "Escape") closeVideoModal();
+        }
+
+        if (albumModalVisible) {
+            if (e.key === "ArrowLeft") changeAlbumPhoto(-1);
+            if (e.key === "ArrowRight") changeAlbumPhoto(1);
+            if (e.key === "Escape") closeAlbumModal();
+        }
+    });
+
+    /* ----- Click Outside Modals ----- */
+    const videoModal = document.getElementById('videoModal');
+    if (videoModal) videoModal.addEventListener('click', e => { if(e.target === videoModal) closeVideoModal(); });
+    
+    const albumModal = document.getElementById('albumModal');
+    if (albumModal) albumModal.addEventListener('click', e => { if(e.target === albumModal) closeAlbumModal(); });
+
+});
+
+/* ---------- Video Functions ---------- */
+function openVideoModal(index) {
+    videoIndex = index;
+    showVideo();
+    document.getElementById("videoModal").style.display = "flex";
+}
+
+function closeVideoModal() {
+    const modal = document.getElementById("videoModal");
+    const modalVideo = document.getElementById("modalVideo");
+    try { modalVideo.pause(); modalVideo.removeAttribute('src'); modalVideo.load(); } catch(e){}
+    modal.style.display = "none";
+}
+
+function changeVideo(step) {
+    videoIndex = (videoIndex + step + videos.length) % videos.length;
+    showVideo();
+}
+
+function showVideo() {
+    const vid = videos[videoIndex];
+    const modalVideo = document.getElementById("modalVideo");
+    const src = vid.dataset.src || vid.src;
+    modalVideo.pause();
+    modalVideo.src = src;
+    modalVideo.load();
+    modalVideo.play().catch(() => {});
+    document.getElementById("videoCaption").innerText = vid.dataset.title || "Video";
+    document.getElementById("videoDescription").innerText = vid.dataset.description || "No description available.";
+}
+
+/* ---------- Album Functions ---------- */
+function initAlbums() {
+    albums = Array.from(document.querySelectorAll(".album-card")).map(card => {
+        const albumId = card.dataset.albumId;
+        const albumTitle = card.querySelector("img").dataset.albumTitle;
+        const cover = card.querySelector("img");
+        const photos = Array.from(card.querySelectorAll(".album-photos img"));
+        return { id: albumId, title: albumTitle, cover: cover, photos: photos };
+    });
+
+    document.querySelectorAll(".album-card img").forEach((img, idx) => {
+        img.addEventListener("click", () => {
+            currentAlbumIndex = idx;
+            currentPhotoIndex = 0;
+            showPhoto();
+            document.getElementById("albumModal").style.display = "flex";
+        });
+    });
+}
+
+function showPhoto() {
+    const album = albums[currentAlbumIndex];
+    if (!album) return;
+
+    const photoList = (album.photos && album.photos.length > 0) ? album.photos : [album.cover];
+    currentPhotoIndex = (currentPhotoIndex + photoList.length) % photoList.length;
+    const photo = photoList[currentPhotoIndex];
+
+    document.getElementById("modalAlbumImage").src = photo.src;
+    document.getElementById("modalAlbumImage").alt = photo.alt || album.title;
+    document.getElementById("modalAlbumCaption").innerText = album.title;
+    document.getElementById("modalAlbumDescription").innerText = photo.dataset.description || "No description";
+    document.getElementById("modalPhotoCounter").innerText =
+        (photoList.length > 1) ? `Photo ${currentPhotoIndex + 1} of ${photoList.length}` : "Cover";
+
+    // Update Album Buttons
+    const editAlbumBtn = document.getElementById("modalEditAlbumBtn");
+    if(editAlbumBtn) editAlbumBtn.href = editAlbumBtn.dataset.templateUrl.replace("0", album.id);
+    const deleteAlbumForm = document.getElementById("modalDeleteAlbumForm");
+    if(deleteAlbumForm) deleteAlbumForm.action = deleteAlbumForm.dataset.templateUrl.replace("0", album.id);
+    const uploadPhotoBtn = document.getElementById("modalUploadPhotoBtn");
+    if(uploadPhotoBtn) uploadPhotoBtn.href = uploadPhotoBtn.dataset.templateUrl.replace("0", album.id);
+
+    // Update Photo Buttons
+    const editPhotoBtn = document.getElementById("modalEditPhotoBtn");
+    const deletePhotoForm = document.getElementById("modalDeletePhotoForm");
+    if(photo.dataset.photoId) {
+        if(editPhotoBtn) { editPhotoBtn.style.display="inline-block"; editPhotoBtn.href = editPhotoBtn.dataset.templateUrl.replace("0", photo.dataset.photoId); }
+        if(deletePhotoForm) { deletePhotoForm.style.display="inline-block"; deletePhotoForm.action = deletePhotoForm.dataset.templateUrl.replace("0", photo.dataset.photoId); }
+    } else {
+        if(editPhotoBtn) editPhotoBtn.style.display="none";
+        if(deletePhotoForm) deletePhotoForm.style.display="none";
+    }
+}
+
+function changeAlbumPhoto(step) {
+    const album = albums[currentAlbumIndex];
+    const photoList = (album.photos && album.photos.length > 0) ? album.photos : [album.cover];
+    currentPhotoIndex = (currentPhotoIndex + step + photoList.length) % photoList.length;
+    showPhoto();
+}
+
+function changeAlbum(step) {
+    currentAlbumIndex = (currentAlbumIndex + step + albums.length) % albums.length;
+    currentPhotoIndex = 0;
+    showPhoto();
+}
+
+function closeAlbumModal() {
+    document.getElementById("albumModal").style.display = "none";
+}
+
+/* ---------- Pagination via AJAX ---------- */
+function loadAlbums(event, page) {
+    event.preventDefault();
+    fetch(`?album_page=${page}`)
+        .then(resp => resp.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            document.querySelector('.album-grid').innerHTML = doc.querySelector('.album-grid').innerHTML;
+            document.querySelector('#albums .pagination').innerHTML = doc.querySelector('#albums .pagination').innerHTML;
+            document.querySelector('#albums').scrollIntoView({behavior:'smooth'});
+            initAlbums();
+        });
+}
+
+function loadVideos(event, page) {
+    event.preventDefault();
+    fetch(`?video_page=${page}`)
+        .then(resp => resp.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            document.querySelector('.media-grid').innerHTML = doc.querySelector('.media-grid').innerHTML;
+            document.querySelector('#videos .pagination').innerHTML = doc.querySelector('#videos .pagination').innerHTML;
+            document.querySelector('#videos').scrollIntoView({behavior:'smooth'});
+            videos = Array.from(document.querySelectorAll(".media-card video"));
+        });
+}
+</script>
+
+
+{% endblock %}

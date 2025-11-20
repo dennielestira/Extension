@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cavite State University Extension Services</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <style>
+        /* Simple styling for the back button */
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #fff;
+            background-color: #22b14c;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .back-btn:hover {
+            background-color: #0d8331;
+        }
+    </style>
+</head>
+<body>
+<div class="header d-flex justify-content-center align-items-center px-3 mb-3">
+    <span>Cavite State University Extension Services</span>
+</div>
+
+<div class="login-container">
+    <!-- Back button above login box -->
+    
+
+    <div class="login-box">
+        <div class="login-form">
+            <div class="logo-container">
+                <img src="{% static 'image/logo.png' %}" alt="CVSU Logo">
+                <img src="{% static 'image/logo2.png' %}" alt="CVSU Logo 2">
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div style="color: red; margin-bottom: 10px;">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                <div>
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div>
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+                <div class="submit">
+                    <a class="back-btn" href="{% url 'home2' %}">← Back</a>
+                    <button type="submit">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/completion_pending_documents.css' %}">
+
+<div class="pending-documents-wrapper container mt-5">
+    <div class="pending-documents-card">
+        <h2 class="pending-title">📌 Completion Processing Documents</h2>
+
+        {% if documents %}
+            <div class="scrollable-list">
+                <ul class="pending-documents-list">
+                    {% for doc in documents %}
+                        <li class="pending-item">
+                            <div class="doc-info">
+                                <strong class="doc-name">{{ doc.name }}</strong>
+                                <small class="text-muted">Uploaded by: {{ doc.uploaded_by.username }}</small><br>
+                                {% if doc.department %}
+                                    <small class="text-muted">Department: {{ doc.department }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="action-links">
+                                <a href="{% url 'view_document' doc.id %}" class="btn-view">View</a>
+
+                                {% if user.account_type == 'Staff Extensionist' %}
+                                    <a href="{% url 'recommend_completion' doc.id %}" class="btn-approve">✅ Recommend</a>
+                                    <a href="{% url 'reject_completion' doc.id %}" class="btn-reject">❌ Reject</a>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <p class="text-muted">No documents currently in completion processing status.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

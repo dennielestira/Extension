@@ -1,0 +1,85 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+{% block title %}Update My Account{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/update_accounts.css' %}">
+
+<div class="register-container">
+    <div class="register-box">
+        <div class="register-form">
+            <div class="logo-container">
+                <img src="{% static 'image/logo.png' %}" alt="CVSU Logo">
+                <img src="{% static 'image/logo2.png' %}" alt="CVSU Logo">
+            </div>
+
+            <h2 style="margin-bottom: 20px; font-size: 15px;">Update My Account</h2>
+
+            <!-- Update Account Form -->
+            <form method="POST" action="{% url 'update_account' %}" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                {% if user_form.non_field_errors %}
+                    <div style="color: red; margin-bottom: 10px;">
+                        {{ user_form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in user_form %}
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="{{ field.id_for_label }}" style="font-weight: bold;">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div style="color: red;">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                    {% if request.user.profile_image %}
+    <div style="margin-bottom: 10px;">
+        <img src="{{ request.user.profile_image.url }}" alt="Current Profile Image" style="width: 100px; height: auto;">
+    </div>
+{% endif %}
+                <div class="submit">
+                    <button type="submit">Update Info</button>
+                </div>
+            </form>
+
+            <hr style="margin: 20px 0;">
+
+            <!-- Change Password Form -->
+            <form method="POST" action="{% url 'change_password' %}">
+                {% csrf_token %}
+                <h3 style="font-size: 14px;">Change Password</h3>
+
+                {% if password_form.non_field_errors %}
+                    <div style="color: red; margin-bottom: 10px;">
+                        {{ password_form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in password_form %}
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="{{ field.id_for_label }}" style="font-weight: bold;">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div style="color: red;">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="submit">
+                    <button type="submit" style="background-color: #f0ad4e;">Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

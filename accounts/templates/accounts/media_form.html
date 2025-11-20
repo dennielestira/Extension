@@ -1,0 +1,154 @@
+{% extends 'accounts/main.html' %}
+{% block content %}
+<div class="upload-wrapper">
+    <div class="upload-card">
+        <h2>📂 Upload / Edit Media</h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-fields">
+                {{ form.as_p }}
+            </div>
+
+            <button type="submit">💾 Save</button>
+        </form>
+    </div>
+</div>
+
+<style>
+/* Reset + Background */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #f8f9fa; /* light gray */
+}
+
+/* Wrapper ensures vertical centering on big screens */
+.upload-wrapper {
+    min-height: calc(100vh - 80px); /* leave space for navbar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 10px;
+    box-sizing: border-box;
+}
+
+/* Card Container */
+.upload-card {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0px 6px 15px rgba(0,0,0,0.15);
+    padding: 25px;
+}
+
+/* Title */
+.upload-card h2 {
+    text-align: center;
+    color: #28a745;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+/* Form Layout */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+form p {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+form label {
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #333;
+}
+
+form input, form select, form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1rem;
+}
+
+form input:focus, form select:focus, form textarea:focus {
+    border-color: #28a745;
+    box-shadow: 0px 0px 6px rgba(40,167,69,0.4);
+}
+
+/* Submit button */
+button {
+    padding: 12px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+}
+
+/* 📱 Responsive adjustments */
+@media (max-width: 768px) {
+    .upload-wrapper {
+        min-height: auto; /* don’t force vertical centering on tablets/phones */
+        padding-top: 30px;
+        padding-bottom: 30px;
+        align-items: flex-start;
+    }
+
+    .upload-card {
+        max-width: 95%;
+        padding: 18px;
+    }
+
+    .upload-card h2 {
+        font-size: 1.5rem;
+    }
+
+    form input, form select, form textarea {
+        font-size: 0.95rem;
+        padding: 8px;
+    }
+
+    button {
+        font-size: 0.95rem;
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .upload-card {
+        max-width: 100%;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .upload-card h2 {
+        font-size: 1.3rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 8px 14px;
+    }
+}
+</style>
+{% endblock %}

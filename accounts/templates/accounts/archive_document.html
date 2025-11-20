@@ -1,0 +1,49 @@
+{% extends 'accounts/home.html' %}
+
+{% block title %}Archived Documents{% endblock %}
+
+{% block content %}
+
+
+<div class="archived-documents-wrapper container mt-5">
+    <div class="archived-documents-card p-4 shadow-sm">
+        <h2 class="archived-title mb-4 text-muted">📦 Archived Documents</h2>
+
+        <div class="scrollable-list">
+            <ul class="archived-list list-group">
+                {% if documents %}
+                    {% for doc in documents %}
+                        <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+                            <div class="doc-info mb-2 mb-md-0">
+                                <strong class="doc-name">{{ doc.name }}</strong><br>
+                            </div>
+
+{% if request.user.account_type == 'Campus Admin' or request.user.account_type == 'Staff Extensionist' or request.user.account_type == 'Department Coordinator' %}
+<div class="d-flex gap-2">
+    <!-- Recover Form -->
+    <form method="POST" action="{% url 'archived_documents' %}">
+        {% csrf_token %}
+        <input type="hidden" name="document_id" value="{{ doc.id }}">
+        <button type="submit" name="recover_document" class="btn btn-sm btn-outline-primary">Recover</button>
+    </form>
+
+    <!-- Delete Form -->
+    <form method="POST" action="{% url 'archived_documents' %}" onsubmit="return confirm('Are you sure you want to permanently delete this document? This action cannot be undone.');">
+        {% csrf_token %}
+        <input type="hidden" name="document_id" value="{{ doc.id }}">
+        <button type="submit" name="delete_document" class="btn btn-sm btn-outline-danger">Delete</button>
+    </form>
+</div>
+{% endif %}
+
+
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item text-muted">No archived documents found.</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

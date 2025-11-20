@@ -1,0 +1,231 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+
+{% block content %}
+<h2><b>Annual Report {{ report.year }}</b></h2>
+
+<div style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <a href="{% url 'add_activity' report.id %}" class="btn btn-primary">Add Activity</a>
+    <a href="{% url 'add_linkage' report.id %}" class="btn btn-secondary">Add Linkage</a>
+    <a href="{% url 'generate_pdf' report.id %}" class="btn btn-success" id="download-pdf-btn" target="_blank">View PDF</a>
+    <span id="saving-status">Saving...</span>
+</div>
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+        color: #000;
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 15px;
+    }
+
+    h2, h3 {
+        color: #000;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    h3 {
+        font-size: 20px;
+        text-align: left;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        margin: 2px;
+        display: inline-block;
+        font-size: 14px;
+    }
+
+    .btn-primary { background-color: #007bff; color: white; }
+    .btn-success { background-color: #28a745; color: white; }
+    .btn-secondary { background-color: #6c757d; color: white; }
+    .btn-outline-warning {
+        border: 1px solid #ffc107;
+        color: #856404;
+        background-color: #fff3cd;
+    }
+
+    .table-scroll {
+        overflow-x: auto;
+        margin-bottom: 30px;
+        border: 1px solid #ddd;
+        background: #fff;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        padding: 8px 12px;
+        font-size: 14px;
+        vertical-align: top;
+        white-space: pre-line;
+    }
+
+    th {
+        background-color: #8B0000;
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: left;
+    }
+
+    td {
+        background-color: #fff;
+    }
+
+    #saving-status {
+        display: none;
+        margin-left: 10px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    @media (max-width: 768px) {
+        h2 { font-size: 20px; }
+        h3 { font-size: 16px; }
+
+        .btn {
+            font-size: 12px;
+            padding: 6px 8px;
+        }
+
+        th, td {
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        table {
+            min-width: 700px;
+        }
+    }
+</style>
+
+
+<div class="main-container">
+    <div id="section-activities">
+        <h3>I. Extension Activities</h3>
+        <p><i>Table 27. List of extension activities conducted</i></p>
+        <p><i>(Attach pictures or other evidence of conducted extension activities)</i></p>
+
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Extension Activity</th>
+                        <th>Extensionist</th>
+                        <th>No. of Clientele / Beneficiaries</th>
+                        <th>Partner Agency</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="sortable-activities">
+    {% for item in processed_activities %}
+    <tr data-id="{{ item.activity.id }}">
+        <td>{{ item.activity.activity }}</td>
+        {% if item.show_extensionist %}
+            <td rowspan="{{ item.rowspan }}">{{ item.activity.extensionist }}</td>
+        {% else %}
+            <td style="display: none;"></td>
+        {% endif %}
+        <td>{{ item.activity.no_of_beneficiaries }}</td>
+        <td>{{ item.activity.partner_agency }}</td>
+        <td>
+            <a href="{% url 'edit_activity' item.activity.id %}" class="btn btn-sm btn-outline-warning">Edit</a>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+            </table>
+        </div>
+    </div>
+
+    {% if report.google_drive_link %}
+    <p><strong>Google Drive Link:</strong> <a href="{{ report.google_drive_link }}" target="_blank">{{ report.google_drive_link }}</a></p>
+    {% endif %}
+
+    <h3>II. Linkages</h3>
+    <p><i>Table 28. List of partner agencies and nature of linkages</i></p>
+
+    <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Agency</th>
+                    <th>Nature of Linkage</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for linkage in report.linkages.all %}
+                <tr>
+                    <td>{{ linkage.agency }}</td>
+                    <td>{{ linkage.nature }}</td>
+                    <td>
+                        <a href="{% url 'edit_linkage' linkage.id %}" class="btn btn-sm btn-outline-warning">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- SortableJS Script -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+    const pdfButton = document.getElementById('download-pdf-btn');
+    const savingStatus = document.getElementById('saving-status');
+
+    const sortable = new Sortable(document.getElementById('sortable-activities'), {
+        animation: 150,
+        onEnd: function () {
+            const activityIds = Array.from(document.querySelectorAll('#sortable-activities tr'))
+                                     .map(row => row.getAttribute('data-id'));
+
+            pdfButton.disabled = true;
+            savingStatus.style.display = 'inline';
+
+            fetch("{% url 'reorder_activities' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ activity_ids: activityIds })
+            }).then(res => {
+                if (!res.ok) {
+                    alert("Failed to save new order.");
+                } else {
+                    pdfButton.disabled = false;
+                    savingStatus.style.display = 'none';
+                    location.reload();
+                }
+            }).catch(err => {
+                alert("An error occurred while saving.");
+                pdfButton.disabled = false;
+                savingStatus.style.display = 'none';
+            });
+        }
+    });
+</script>
+{% endblock %}
