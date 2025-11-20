@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-#xf$e7x4)@_isvkz#(2jqwq7hky%!(6-684y!d_0*pa!j4*gfl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["extension-bza4.onrender.com", "localhost", "127.0.0.1"]
+
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
