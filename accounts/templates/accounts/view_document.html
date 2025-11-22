@@ -117,6 +117,7 @@
 <div class="card card-large mt-4">
   <div class="card-body">
     <h5 class="card-title">Initial Uploaded Files:</h5>
+
     {% if user.account_type == "Campus Admin" or user.account_type == "Staff Extensionist" %}
       <button class="btn btn-sm btn-secondary mb-3" id="toggle-initial-revision-btn">
         Show All Revision Buttons
@@ -126,61 +127,97 @@
     <div class="file-container">
       {% for name, title, file, status in file_list %}
         {% if file %}
-          <div class="file-item mb-3 p-2 border rounded">
-            <div class="d-flex align-items-center gap-2">
-              <strong>{{ title }}:</strong>
-              <a href="{{ file.url }}" target="_blank">{{ file.name|cut:"documents/" }}</a>
+          <div class="file-item mb-3 p-3 border rounded">
+
+            <!-- Make row wrap on small screens -->
+            <div class="d-flex flex-wrap align-items-start gap-2">
+
+              <!-- Title -->
+              <strong class="me-1">{{ title }}:</strong>
+
+              <!-- Filename -->
+              <a href="{{ file.url }}" target="_blank" class="text-break">
+                {{ file.name|cut:"documents/" }}
+              </a>
 
               {% if status != "revision" %}
+
+                <!-- Revision Button (your function still works) -->
                 <form method="post" class="revision-form ms-2">
                   {% csrf_token %}
                   <input type="hidden" name="revision_doc" value="{{ name }}">
-                  <button type="submit" name="mark_initial_revision" class="btn btn-sm btn-warning">Need Revision</button>
+                  <button type="submit" name="mark_initial_revision"
+                          class="btn btn-sm btn-warning">
+                    Need Revision
+                  </button>
                 </form>
+
               {% else %}
+
                 <span class="text-danger ms-2">⚠ Needs Revision</span>
 
                 <!-- 💬 Comments Dropdown -->
-                <div class="dropdown d-inline ms-2">
-                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <div class="dropdown d-inline-block ms-2">
+                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                          type="button" data-bs-toggle="dropdown">
                     💬 Comments
                   </button>
-                  <div class="dropdown-menu p-3" style="min-width: 600px; max-height: 300px; overflow-y: auto;">
+
+                  <div class="dropdown-menu p-3"
+                       style="min-width: 100%; max-width: 600px; max-height: 300px; overflow-y: auto;">
+
                     {% if user.account_type == "Campus Admin" or user.account_type == "Staff Extensionist" %}
-                    <form method="post" enctype="multipart/form-data" class="mb-2">
-                      {% csrf_token %}
-                      <input type="hidden" name="day_id" value="{{ day.id }}">
-                      <input type="hidden" name="slot_name" value="{{ name }}">
-                      <textarea name="revision_comment" class="form-control mb-2" rows="4" placeholder="Add a comment..." required></textarea>
-                      <input type="file" name="revision_image" class="form-control form-control-sm mb-2" accept="image/*">
-                      <button type="submit" name="submit_revision_comment" class="btn btn-primary btn-sm w-100">💬 Submit Comment</button>
-                    </form>
+                      <form method="post" enctype="multipart/form-data" class="mb-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="day_id" value="{{ day.id }}">
+                        <input type="hidden" name="slot_name" value="{{ name }}">
+
+                        <textarea name="revision_comment" class="form-control mb-2"
+                                  rows="4" placeholder="Add a comment..." required></textarea>
+
+                        <input type="file" name="revision_image"
+                               class="form-control form-control-sm mb-2" accept="image/*">
+
+                        <button type="submit" name="submit_revision_comment"
+                                class="btn btn-primary btn-sm w-100">
+                          💬 Submit Comment
+                        </button>
+                      </form>
                     {% endif %}
+
                     <hr class="my-2">
                     <h6 class="fw-bold small mb-1">🗒 Comments:</h6>
-                    <div class="comment-list small" style="max-height: 180px; overflow-y: auto;">
+
+                    <div class="comment-list small" style="max-height:180px; overflow-y:auto;">
                       {% with has_comment=False %}
                         {% for feedback in revision_feedbacks %}
                           {% if feedback.slot_name == name %}
                             {% with has_comment=True %}
                               <div class="border-bottom py-1">
-                                <strong>{{ feedback.user.get_full_name|default:feedback.user.username }}</strong>:
-                                <small class="text-muted ms-1">{{ feedback.created_at|date:"M d, Y h:i A" }}</small>
+                                <strong>{{ feedback.user.get_full_name|default:feedback.user.username }}</strong>
+                                <small class="text-muted ms-1">
+                                  {{ feedback.created_at|date:"M d, Y h:i A" }}
+                                </small>
                                 <p class="mb-1">{{ feedback.comment }}</p>
+
                                 {% if feedback.image %}
                                   <a href="{{ feedback.image.url }}" target="_blank">
-                                    <img src="{{ feedback.image.url }}" class="img-thumbnail mt-1" style="max-width:150px;">
+                                    <img src="{{ feedback.image.url }}"
+                                         class="img-thumbnail mt-1"
+                                         style="max-width:150px;">
                                   </a>
                                 {% endif %}
                               </div>
                             {% endwith %}
                           {% endif %}
                         {% endfor %}
+
                         {% if not has_comment %}
                           <p class="text-muted">No comments yet.</p>
                         {% endif %}
                       {% endwith %}
                     </div>
+
                   </div>
                 </div>
                 <!-- End Comments Dropdown -->
@@ -195,8 +232,10 @@
     {% if not document.Activity_Proposal and not document.Work_and_Financial_Plan and not document.Plan_of_Activities and not document.doc4 and not document.doc5 and not document.doc6 and not document.doc7 and not document.doc8 %}
       <p>No files uploaded yet.</p>
     {% endif %}
+
   </div>
 </div>
+
 
 
 
@@ -747,6 +786,7 @@
   {% if existing_completion %}
     <div class="card-body">
       <h5 class="card-title">Uploaded Completion Documents:</h5>
+
       {% if user.account_type == "Campus Admin" or user.account_type == "Staff Extensionist" %}
         <button class="btn btn-sm btn-secondary mb-3" id="toggle-completion-revision-btn">
           Show All Revision Buttons
@@ -756,51 +796,87 @@
       <div class="file-container">
         {% for name, title, file, status in completion_file_list %}
           {% if file %}
-            <div class="file-item mb-3 p-2 border rounded">
-              <div class="d-flex align-items-center gap-2">
-                <strong>{{ title }}:</strong>
-                <a href="{{ file.url }}" target="_blank">{{ file.name|cut:"documents/completion/" }}</a>
+            <div class="file-item mb-3 p-3 border rounded">
+
+              <!-- Make layout wrap properly on smaller screens -->
+              <div class="d-flex flex-wrap align-items-start gap-2">
+
+                <!-- Title -->
+                <strong class="me-1">{{ title }}:</strong>
+
+                <!-- Filename (auto-wrap long names) -->
+                <a href="{{ file.url }}" target="_blank" class="text-break">
+                  {{ file.name|cut:"documents/completion/" }}
+                </a>
 
                 {% if status != "revision" %}
+
                   {% if user.account_type == "Campus Admin" or user.account_type == "Staff Extensionist" %}
+                    <!-- SAME FUNCTION, DO NOT TOUCH -->
                     <form method="post" class="revision-form ms-2">
                       {% csrf_token %}
                       <input type="hidden" name="revision_doc" value="{{ name }}">
-                      <button type="submit" name="mark_revision_completion" class="btn btn-sm btn-warning">Need Revision</button>
+                      <button type="submit" name="mark_revision_completion" class="btn btn-sm btn-warning">
+                        Need Revision
+                      </button>
                     </form>
                   {% endif %}
+
                 {% else %}
+
+                  <!-- Status -->
                   <span class="text-danger ms-2">⚠ Needs Revision</span>
 
                   <!-- 💬 Comments Dropdown -->
-                  <div class="dropdown d-inline ms-2">
+                  <div class="dropdown d-inline-block ms-2">
                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                       💬 Comments
                     </button>
-                    <div class="dropdown-menu p-3" style="min-width: 600px; max-height: 300px; overflow-y: auto;">
+
+                    <!-- Make dropdown responsive -->
+                    <div class="dropdown-menu p-3"
+                         style="min-width: 100%; max-width: 600px; max-height: 300px; overflow-y: auto;">
+
                       {% if user.account_type == "Campus Admin" or user.account_type == "Staff Extensionist" %}
-                      <form method="post" enctype="multipart/form-data" class="mb-2">
-                        {% csrf_token %}
-                        <input type="hidden" name="completion_slot" value="{{ name }}">
-                        <textarea name="revision_comment" class="form-control mb-2" rows="4" placeholder="Add a comment..." required></textarea>
-                        <input type="file" name="revision_image" class="form-control form-control-sm mb-2" accept="image/*">
-                        <button type="submit" name="submit_completion_revision_comment" class="btn btn-primary btn-sm w-100">💬 Submit Comment</button>
-                      </form>
+                        <form method="post" enctype="multipart/form-data" class="mb-2">
+                          {% csrf_token %}
+                          <input type="hidden" name="completion_slot" value="{{ name }}">
+
+                          <textarea name="revision_comment" class="form-control mb-2"
+                                    rows="4" placeholder="Add a comment..." required></textarea>
+
+                          <input type="file" name="revision_image"
+                                 class="form-control form-control-sm mb-2"
+                                 accept="image/*">
+
+                          <button type="submit" name="submit_completion_revision_comment"
+                                  class="btn btn-primary btn-sm w-100">
+                            💬 Submit Comment
+                          </button>
+                        </form>
                       {% endif %}
+
                       <hr class="my-2">
                       <h6 class="fw-bold small mb-1">🗒 Comments:</h6>
-                      <div class="comment-list small" style="max-height: 180px; overflow-y: auto;">
+
+                      <div class="comment-list small" style="max-height:180px; overflow-y:auto;">
                         {% with has_comment=False %}
                           {% for feedback in completion_feedbacks %}
                             {% if feedback.slot_name == name %}
                               {% with has_comment=True %}
                                 <div class="border-bottom py-1">
-                                  <strong>{{ feedback.user.get_full_name|default:feedback.user.username }}</strong>:
-                                  <small class="text-muted ms-1">{{ feedback.created_at|date:"M d, Y h:i A" }}</small>
+                                  <strong>{{ feedback.user.get_full_name|default:feedback.user.username }}</strong>
+                                  <small class="text-muted ms-1">
+                                    {{ feedback.created_at|date:"M d, Y h:i A" }}
+                                  </small>
+
                                   <p class="mb-1">{{ feedback.comment }}</p>
+
                                   {% if feedback.image %}
                                     <a href="{{ feedback.image.url }}" target="_blank">
-                                      <img src="{{ feedback.image.url }}" class="img-thumbnail mt-1" style="max-width:150px;">
+                                      <img src="{{ feedback.image.url }}"
+                                           class="img-thumbnail mt-1"
+                                           style="max-width:150px;">
                                     </a>
                                   {% endif %}
                                 </div>
@@ -812,9 +888,11 @@
                           {% endif %}
                         {% endwith %}
                       </div>
+
                     </div>
                   </div>
-                  <!-- End Comments Dropdown -->
+                  <!-- End Comments -->
+
                 {% endif %}
               </div>
             </div>
@@ -822,15 +900,13 @@
         {% endfor %}
       </div>
 
-  {% comment "Optional: display message if no files uploaded" %}{% endcomment %}
-  {% if completion_file_list|length == 0 %}
-    <p>No completion files uploaded yet.</p>
-  {% endif %}
+      {% if completion_file_list|length == 0 %}
+        <p>No completion files uploaded yet.</p>
+      {% endif %}
 
     </div>
   {% endif %}
 </div>
-
 
 
 
@@ -919,8 +995,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("toggle-initial-revision-btn");
-    const forms = document.querySelectorAll(".revision-form");
-    let hidden = false;
+    if (!toggleBtn) return;
+
+    const card = toggleBtn.closest(".card"); // only forms inside this card
+    const forms = card.querySelectorAll(".revision-form");
+
+    let hidden = false; // start visible
 
     toggleBtn.addEventListener("click", function () {
         hidden = !hidden;
@@ -928,10 +1008,15 @@ document.addEventListener("DOMContentLoaded", function () {
         toggleBtn.textContent = hidden ? "Show All Revision Buttons" : "Hide All Revision Buttons";
     });
 });
+
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("toggle-completion-revision-btn");
-    const forms = document.querySelectorAll(".revision-form");
-    let hidden = false;
+    if (!toggleBtn) return;
+
+    const card = toggleBtn.closest(".card"); // only forms inside this card
+    const forms = card.querySelectorAll(".revision-form");
+
+    let hidden = false; // start visible
 
     toggleBtn.addEventListener("click", function () {
         hidden = !hidden;
@@ -939,6 +1024,7 @@ document.addEventListener("DOMContentLoaded", function () {
         toggleBtn.textContent = hidden ? "Show All Revision Buttons" : "Hide All Revision Buttons";
     });
 });
+
 function confirmFileReplacement(form) {
   const daySelect = form.querySelector('select[name="day_id"]');
   const slotSelect = form.querySelector('select[name="file_slot"]');
