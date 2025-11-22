@@ -395,11 +395,11 @@ def campus_admin_view(request):
     }
 
     DAYFILE_NICKNAMES = {
-        "doc1": "Supporting Document 1",
-        "doc2": "Supporting Document 2",
-        "doc3": "Supporting Document 3",
-        "doc4": "Supporting Document 4",
-        "doc5": "Supporting Document 5",
+        "doc1": "Attendance Sheet ",
+        "doc2": "Photo Documentation",
+        "doc3": "Program",
+        "doc4": "Extra File Slot 1",
+        "doc5": "Extra File Slot 2",
     }
 
     COMPLETION_NICKNAMES = {
