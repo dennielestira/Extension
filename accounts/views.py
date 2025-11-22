@@ -2719,7 +2719,6 @@ def preview_day_training_reports(request, quarter, year):
             "timeliness_counts": parsed.get("timeliness_counts") or {},
             "timeliness_average": t,
             "weight_multiplier": parsed.get("weight_multiplier"),
-            "weighted_persons": parsed.get("weighted_persons"),
             "collaborating_agencies": parsed.get("collaborating_agencies", ""),
             "amount_charged_to_cvsu": amount_charged_to_cvsu,
             "amount_charged_to_partner_agency": amount_charged_to_partner_agency,
@@ -2945,7 +2944,7 @@ def download_day_training_reports_excel(request, quarter, year):
     light_green_fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
 
     # === MAIN TITLE ===
-    ws.merge_cells("A1:BI1")
+    ws.merge_cells("A1:BH1")
     safe_set(ws["A1"], f"Cavite State University – Day Training Reports ({quarter.upper()} {year})")
     ws["A1"].font = Font(bold=True, size=14)
     ws["A1"].alignment = center
@@ -2978,7 +2977,6 @@ def download_day_training_reports_excel(request, quarter, year):
     ws.merge_cells("BD2:BD3"); safe_set(ws["BD2"], "Total number of clients requesting trainings")
     ws.merge_cells("BE2:BE3"); safe_set(ws["BE2"], "Total number of requests for trainings responded in the next 3 days")
     ws.merge_cells("BF2:BH2"); safe_set(ws["BF2"], "Estimated Expenses and Source of Fund")  # BF..BH
-    ws.merge_cells("BI2:BI3"); safe_set(ws["BI2"], "Weighted Persons")
 
     # === ROW 3 SUBHEADERS (below headers) ===
     subheaders_row3 = {
@@ -3050,8 +3048,6 @@ def download_day_training_reports_excel(request, quarter, year):
     col_total_participants = col_to_num("AC")
     # Weight multiplier moved from AH -> AI
     col_multiplier = col_to_num("AI")
-    # Weighted persons (last column) moved from BH -> BI
-    col_weighted_persons = col_to_num("BI")
     # Total surveyed moved from AI -> AJ
     col_total_surveyed = col_to_num("AJ")
 
@@ -3150,8 +3146,6 @@ def download_day_training_reports_excel(request, quarter, year):
             getattr(e, "amount_charged_to_partner_agency", ""),
             getattr(e, "estimated_expense_other", ""),
 
-            # BI: Weighted Persons (formula set later)
-            "",  # BI placeholder
         ]
 
         # Write row values
@@ -3163,11 +3157,6 @@ def download_day_training_reports_excel(request, quarter, year):
             if val == "✓":
                 c.font = Font(bold=True, color="006100")
 
-        # === Weighted Persons formula in BI ===
-        ws.cell(row=row, column=col_weighted_persons).value = (
-            f"={get_column_letter(col_total_participants)}{row}*{get_column_letter(col_multiplier)}{row}"
-        )
-        ws.cell(row=row, column=col_weighted_persons).fill = light_green_fill
 
         # === Ratings averages formulas (Relevance, Quality, Timeliness) ===
         # Relevance Avg at AP (col AP)
@@ -3205,8 +3194,8 @@ def download_day_training_reports_excel(request, quarter, year):
         "M":10,"N":10,"O":10,"P":10,"Q":10,"R":10,"S":10,"T":10,"U":15,"V":15,"W":15,"X":20,
         "Y":15,"Z":8,"AA":15,"AB":15,"AC":15,"AD":10,"AE":12,"AF":15,"AG":15,"AH":8,"AI":15,
         "AJ":15,"AK":8,"AL":10,"AM":8,"AN":8,"AO":8,"AP":8,"AQ":8,"AR":10,"AS":8,"AT":8,"AU":8,
-        "AV":8,"AW":8,"AX":10,"AY":15,"AZ":20,"BA":18,"BB":18,"BC":20,"BD":18,"BE":12,"BF":12,
-        "BG":12,"BH":12,"BI":15
+        "AV":8,"AW":8,"AX":10,"AY":15,"AZ":20,"BA":18,"BB":18,"BC":20,"BD":18,"BE":18,"BF":12,
+        "BG":12,"BH":12
     }
     for k, v in widths.items():
         ws.column_dimensions[k].width = v
