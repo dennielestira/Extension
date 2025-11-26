@@ -39,6 +39,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ExtensionServices10@gmail.com'
 EMAIL_HOST_PASSWORD = 'gosu czfs cnzq uwao'
 DEFAULT_FROM_EMAIL = 'ExtensionServices10@gmail.com'
+EMAIL_TIMEOUT = 10 
 # Application definition
 
 INSTALLED_APPS = [
