@@ -108,13 +108,14 @@ WSGI_APPLICATION = 'school_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Service',
-        'USER': 'postgres',
-        'PASSWORD': 'Extension',
-        'PORT' : '5432',
-        'HOST' : 'localhost'
+        'NAME': 'extension_db_xec0',  # from Render
+        'USER': 'extension_db_xec0_user',  # from Render
+        'PASSWORD': 'AramRDr2Knmn0gTBu0ks2sXrwxsM8Jo',  # from Render
+        'HOST': 'dpg-d4jc398dl3ps73ecgvmg-a',  # from Render
+        'PORT': '5432',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
