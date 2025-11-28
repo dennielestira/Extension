@@ -105,10 +105,15 @@ WSGI_APPLICATION = 'school_system.wsgi.application'
 #        'NAME': BASE_DIR / 'db.sqlite3',
 #    }
 #}
-import dj_database_url
-
 DATABASES = {
-    'default': dj_database_url.parse(os.getenv("DATABASE_URL"))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'extension_db_xec0',
+        'USER': 'extension_db_xec0_user',
+        'PASSWORD': 'AramRDr2Knmn0gTBuOks2sXrwxsnM8Jo',
+        'HOST': 'dpg-d4jc398dl3ps73ecgvmg-a',
+        'PORT': '5432',
+    }
 }
 
 
