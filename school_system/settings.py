@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'school_system.wsgi.application'
 #}
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'Service',
         'USER': 'postgres',
         'PASSWORD': 'Extension',
