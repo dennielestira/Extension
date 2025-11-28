@@ -108,9 +108,9 @@ WSGI_APPLICATION = 'school_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'extension_db_xec0',  # from Render
+        'NAME': 'Extension Database',  # from Render
         'USER': 'extension_db_xec0_user',  # from Render
-        'PASSWORD': 'AramRDr2Knmn0gTBu0ks2sXrwxsM8Jo',  # from Render
+        'PASSWORD': 'AramRDr2Knmn0gTBuOks2sXrwxsnM8Jo',  # from Render
         'HOST': 'dpg-d4jc398dl3ps73ecgvmg-a',  # from Render
         'PORT': '5432',
     }
